@@ -87,6 +87,8 @@ async function handleNotify(req, res) {
     `${JSON.stringify({ ...lead, createdAt: new Date().toISOString() })}\n`
   );
 
+  logSubmission(lead);
+
   const emailResult = await sendNotificationEmail(lead);
 
   sendJson(res, 200, {
@@ -96,6 +98,25 @@ async function handleNotify(req, res) {
       ? "Sent. I will reply soon."
       : "Saved. Email is not configured yet, but the request is stored."
   });
+}
+
+function logSubmission(lead) {
+  const lines = [
+    "",
+    "================ NEW DATE PLAN ================",
+    `Name: ${lead.name}`,
+    `Email: ${lead.email}`,
+    `Date: ${lead.date}`,
+    `Time: ${lead.time}`,
+    `Food: ${lead.food.length ? lead.food.join(", ") : "None selected"}`,
+    lead.page ? `Page: ${lead.page}` : "",
+    "Comment:",
+    lead.comment,
+    "================================================",
+    ""
+  ].filter((line) => line !== "");
+
+  console.log(lines.join("\n"));
 }
 
 function sanitizeLead(input) {
