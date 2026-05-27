@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>A Tiny Plan</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="page-shell">
+      <div class="ambient" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <section class="planner" aria-labelledby="screenTitle">
+        <div class="progress" aria-label="Progress">
+          <span class="active" data-dot="0">heart</span>
+          <span data-dot="1">date</span>
+          <span data-dot="2">food</span>
+          <span data-dot="3">note</span>
+        </div>
+
+        <div class="card">
+          <form id="dateForm">
+            <section class="screen active" data-screen="intro">
+              <div class="sticker-row" aria-hidden="true">
+                <span>💌</span>
+                <span>✨</span>
+                <span>🍓</span>
+              </div>
+              <p class="kicker">one little question</p>
+              <h1 id="screenTitle">Can I take you out?</h1>
+              <p class="subtext">No pressure. The button marked no is just very shy today.</p>
+
+              <div class="choice-row">
+                <button class="primary" type="button" data-next="details">Yes, okay</button>
+                <button class="secondary run-away" id="noButton" type="button">No</button>
+              </div>
+            </section>
+
+            <section class="screen" data-screen="details">
+              <div class="sticker-row" aria-hidden="true">
+                <span>🗓️</span>
+                <span>👟</span>
+                <span>🌷</span>
+              </div>
+              <p class="kicker">so... when are you free?</p>
+              <h2>Pick the day and time</h2>
+
+              <label>
+                Pick a day
+                <input name="date" type="date" required>
+              </label>
+
+              <label>
+                What time?
+                <select name="time" required>
+                  <option value="">Select a time</option>
+                  <option>5:00 PM - golden hour</option>
+                  <option>6:00 PM - casual and cute</option>
+                  <option>7:00 PM - dinner timing</option>
+                  <option>8:00 PM - night plan energy</option>
+                  <option>Any time, surprise me</option>
+                </select>
+              </label>
+
+              <button class="primary wide" type="button" data-next="food">Okay next</button>
+            </section>
+
+            <section class="screen" data-screen="food">
+              <p class="kicker">what are we feeling?</p>
+              <h2>Pick food</h2>
+              <p class="hint">You can pick more than one.</p>
+
+              <div class="food-grid" role="group" aria-label="Food choices">
+                <label class="food-card">
+                  <input type="checkbox" name="food" value="Pizza">
+                  <span>🍕</span>
+                  Pizza
+                </label>
+                <label class="food-card">
+                  <input type="checkbox" name="food" value="Sushi">
+                  <span>🍣</span>
+                  Sushi
+                </label>
+                <label class="food-card">
+                  <input type="checkbox" name="food" value="Burgers">
+                  <span>🍔</span>
+                  Burgers
+                </label>
+                <label class="food-card">
+                  <input type="checkbox" name="food" value="Pasta">
+                  <span>🍝</span>
+                  Pasta
+                </label>
+                <label class="food-card">
+                  <input type="checkbox" name="food" value="Tacos">
+                  <span>🌮</span>
+                  Tacos
+                </label>
+                <label class="food-card">
+                  <input type="checkbox" name="food" value="Dessert">
+                  <span>🍰</span>
+                  Dessert
+                </label>
+              </div>
+
+              <button class="primary wide" type="button" data-next="comment">This one</button>
+            </section>
+
+            <section class="screen" data-screen="comment">
+              <div class="sticker-row" aria-hidden="true">
+                <span>💬</span>
+                <span>💗</span>
+                <span>🥤</span>
+              </div>
+              <p class="kicker">last tiny thing</p>
+              <h2>Leave one comment</h2>
+
+              <label>
+                Your name
+                <input name="name" autocomplete="name" maxlength="80" required>
+              </label>
+
+              <label>
+                Your email
+                <input name="email" type="email" autocomplete="email" maxlength="120" required>
+              </label>
+
+              <label>
+                Comment
+                <textarea name="comment" rows="4" maxlength="700" placeholder="Write anything..." required></textarea>
+              </label>
+
+              <button class="primary wide" type="submit">Send to Arnab</button>
+              <p class="status" id="formStatus" role="status"></p>
+            </section>
+
+            <section class="screen" data-screen="done">
+              <div class="sticker-row" aria-hidden="true">
+                <span>🎉</span>
+                <span>💌</span>
+                <span>✨</span>
+              </div>
+              <p class="kicker">it is a plan</p>
+              <h2>Sent!</h2>
+              <div class="summary" id="summary"></div>
+              <p class="subtext">This link can only be used once from this phone or browser.</p>
+            </section>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
