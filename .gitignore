@@ -1,3 +1,5 @@
 .env
 node_modules/
 data/*.jsonl
+known_hosts
+tunnel.*.log

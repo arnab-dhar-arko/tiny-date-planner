@@ -17,4 +17,4 @@ services:
       - key: FROM_EMAIL
         sync: false
       - key: OWNER_EMAIL
-        sync: false
+        value: arnab20.dhar@gmail.com
