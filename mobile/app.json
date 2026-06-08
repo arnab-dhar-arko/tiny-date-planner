@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "Roam Budget",
+    "slug": "roam-budget",
+    "scheme": "roambudget",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.roambudget.app"
+    },
+    "android": {
+      "package": "com.roambudget",
+      "versionCode": 1,
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ],
+      "blockedPermissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.VIBRATE"
+      ],
+      "adaptiveIcon": {
+        "backgroundColor": "#f6f3f8"
+      }
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-sqlite",
+      "expo-font",
+      "expo-asset"
+    ]
+  }
+}

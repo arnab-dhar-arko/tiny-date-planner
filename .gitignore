@@ -1,5 +1,9 @@
 .env
+data/*.jsonl
+*.log
 node_modules/
+dist/
+*.tsbuildinfo
 data/*.jsonl
 known_hosts
 tunnel.*.log

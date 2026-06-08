@@ -1,0 +1,10 @@
+{
+  "yaml.schemas": {
+    "https://render.com/schema/render.yaml.json": "render.yaml"
+  },
+  "files.exclude": {
+    "**/*.log": true
+  },
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.configuration.updateBuildConfiguration": "interactive"
+}
