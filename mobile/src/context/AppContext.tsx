@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react";
-import { initDatabase, removeDemoSeedData, rows, saveSettlement, saveTrip } from "../storage/database";
+import { clearOutbox, initDatabase, removeDemoSeedData, rows, saveSettlement, saveTrip } from "../storage/database";
 import { pullTripsFromCloud, registerConnectivitySync, syncAllLocalTripsFromCloud, syncNow, syncTripFromCloud } from "../sync/syncEngine";
 import type { Expense, ExpenseSplit, Settlement, Trip, TripMember } from "../types";
 import { useAuth } from "./AuthContext";
@@ -17,13 +17,14 @@ type AppState = {
   createTrip(name: string): Promise<void>;
   inviteFriend(email: string): Promise<void>;
   refreshFromCloud(): Promise<void>;
+  resetLocalQueue(): Promise<void>;
   settle(from_user_id: string, to_user_id: string, amount: number): Promise<void>;
 };
 
 const AppContext = createContext<AppState | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const { token, user } = useAuth();
   const [trips, setTrips] = useState<Trip[]>([]);
   const [members, setMembers] = useState<TripMember[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -53,13 +54,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     initDatabase()
       .then(async () => {
         await removeDemoSeedData();
-        await pullTripsFromCloud().catch(() => undefined);
+        if (token && user) await pullTripsFromCloud().catch(() => undefined);
         await reload();
-        unsubscribe = registerConnectivitySync();
-        syncNow().then(() => syncAllLocalTripsFromCloud()).then(reload).catch(() => undefined);
+        if (token && user) {
+          unsubscribe = registerConnectivitySync();
+          syncNow().then(() => syncAllLocalTripsFromCloud()).then(reload).catch(() => undefined);
+        }
       });
     return () => unsubscribe();
-  }, []);
+  }, [token, user?.id]);
 
   const currentTrip = trips[0];
 
@@ -72,7 +75,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     settlements,
     reload,
     async createTrip(name) {
-      const ownerId = user?.id ?? uuid();
+      if (!user) throw new Error("Please log in again before creating a trip.");
+      const ownerId = user.id;
       const now = new Date();
       const end = new Date(now);
       end.setDate(end.getDate() + 14);
@@ -107,7 +111,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await reload();
     },
     async refreshFromCloud() {
-      await syncNow();
+      try {
+        await syncNow();
+      } catch (error) {
+        console.warn("Push sync failed; pulling cloud data anyway", error);
+      }
+      await syncAllLocalTripsFromCloud();
+      await reload();
+    },
+    async resetLocalQueue() {
+      await clearOutbox();
       await syncAllLocalTripsFromCloud();
       await reload();
     },

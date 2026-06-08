@@ -7,7 +7,7 @@ import { colors } from "../theme";
 
 export function SettingsScreen() {
   const { logout } = useAuth();
-  const { currentTrip, members, inviteFriend, refreshFromCloud } = useApp();
+  const { currentTrip, members, inviteFriend, refreshFromCloud, resetLocalQueue } = useApp();
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [cloudStatus, setCloudStatus] = useState("Not checked yet");
@@ -65,6 +65,9 @@ export function SettingsScreen() {
       )}
       <Pressable disabled={busy} onPress={() => run(refreshFromCloud, "Latest trips, members, expenses, and settlements downloaded.")} style={{ backgroundColor: colors.surface, borderRadius: 16, padding: 14, alignItems: "center" }}>
         <Text style={{ color: colors.text, fontWeight: "900" }}>Refresh from cloud</Text>
+      </Pressable>
+      <Pressable disabled={busy} onPress={() => run(resetLocalQueue, "Stuck local sync queue cleared. Cloud data refreshed.")} style={{ backgroundColor: colors.surface, borderRadius: 16, padding: 14, alignItems: "center" }}>
+        <Text style={{ color: colors.text, fontWeight: "900" }}>Clear stuck sync queue</Text>
       </Pressable>
       <Pressable onPress={logout} style={{ marginTop: 24, backgroundColor: colors.text, borderRadius: 16, padding: 14, alignItems: "center" }}>
         <Text style={{ color: "#fff", fontWeight: "900" }}>Log out</Text>

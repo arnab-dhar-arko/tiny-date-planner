@@ -31,7 +31,10 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
     throw new Error(`Cannot reach Roam Budget cloud at ${API_BASE_URL}. Check internet, then try again.`);
   }
   const body = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(body.error ?? "Request failed");
+  if (!response.ok) {
+    const details = typeof body.details === "string" ? ` ${body.details}` : "";
+    throw new Error(`${body.error ?? `Request failed (${response.status})`}${details}`);
+  }
   return body as T;
 }
 

@@ -204,6 +204,10 @@ export async function deleteOutbox(ids: number[]) {
   await run(`DELETE FROM outbox WHERE id IN (${ids.map(() => "?").join(",")})`, ids);
 }
 
+export async function clearOutbox() {
+  await run("DELETE FROM outbox");
+}
+
 export async function getSyncCursor() {
   const meta = await rows<{ value: string }>("SELECT value FROM sync_meta WHERE key = 'cursor'");
   return Number(meta[0]?.value ?? 0);

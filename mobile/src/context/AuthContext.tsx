@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react";
 import { api, clearToken, getToken, saveToken } from "../api/client";
 import type { User } from "../types";
+import * as SecureStore from "expo-secure-store";
 
 type AuthContextValue = {
   token: string | null;
@@ -11,13 +12,30 @@ type AuthContextValue = {
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+const USER_KEY = "roam_budget_user";
+
+async function saveUser(user: User) {
+  await SecureStore.setItemAsync(USER_KEY, JSON.stringify(user));
+}
+
+async function getSavedUser() {
+  const value = await SecureStore.getItemAsync(USER_KEY);
+  return value ? JSON.parse(value) as User : null;
+}
+
+async function clearUser() {
+  await SecureStore.deleteItemAsync(USER_KEY);
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    getToken().then(setToken);
+    Promise.all([getToken(), getSavedUser()]).then(([nextToken, nextUser]) => {
+      setToken(nextToken);
+      setUser(nextUser);
+    });
   }, []);
 
   const value = useMemo<AuthContextValue>(() => ({
@@ -29,6 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email, password })
       });
       await saveToken(result.token);
+      await saveUser(result.user);
       setToken(result.token);
       setUser(result.user);
     },
@@ -38,11 +57,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ name, email, password, currency_preference: "USD" })
       });
       await saveToken(result.token);
+      await saveUser(result.user);
       setToken(result.token);
       setUser(result.user);
     },
     async logout() {
       await clearToken();
+      await clearUser();
       setToken(null);
       setUser(null);
     }
