@@ -1,6 +1,6 @@
 import * as SecureStore from "expo-secure-store";
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? "http://10.0.2.2:8080";
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? "https://roam-budget-api.onrender.com";
 const TOKEN_KEY = "roam_budget_token";
 
 export async function saveToken(token: string) {
@@ -17,15 +17,26 @@ export async function clearToken() {
 
 export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = await getToken();
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers
-    }
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...options.headers
+      }
+    });
+  } catch {
+    throw new Error(`Cannot reach Roam Budget cloud at ${API_BASE_URL}. Check internet, then try again.`);
+  }
   const body = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(body.error ?? "Request failed");
   return body as T;
+}
+
+export async function checkApiHealth() {
+  const response = await fetch(`${API_BASE_URL}/health`);
+  if (!response.ok) throw new Error(`Cloud returned ${response.status}`);
+  return response.json() as Promise<{ ok: boolean; service: string }>;
 }
